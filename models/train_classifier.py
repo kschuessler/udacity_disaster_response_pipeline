@@ -1,7 +1,11 @@
-import nltk, sys, pickle
-from nltk.tokenize import word_tokenize
-from nltk.stem import WordNetLemmatizer
+import nltk
 import pandas as pd
+import pickle
+import re
+import sys
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.metrics import precision_recall_fscore_support
@@ -9,7 +13,8 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
 from sqlalchemy import create_engine
-nltk.download(['punkt', 'wordnet'])
+
+nltk.download(['punkt', 'stopwords', 'wordnet'])
 
 
 def load_data(database_filepath, table='messages'):
@@ -36,13 +41,12 @@ def tokenize(text):
     OUTPUT:
         clean_tokens - clean, tokenized text
     """
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text)
     tokens = word_tokenize(text)
+    stop_words = stopwords.words("english")
     lemmatizer = WordNetLemmatizer()
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
+    clean_tokens = [lemmatizer.lemmatize(tok).lower().strip() for tok in tokens if tok not in stop_words]
 
     return clean_tokens
 

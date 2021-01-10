@@ -1,10 +1,13 @@
 import json
 import joblib
+import operator
 import plotly
 import pandas as pd
+import re
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
 
 from collections import Counter
 from flask import Flask
@@ -16,13 +19,18 @@ from sqlalchemy import create_engine
 app = Flask(__name__)
 
 def tokenize(text):
+    """
+    INPUT:
+        text - raw text
+    OUTPUT:
+        clean_tokens - clean, tokenized text
+    """
+    text = re.sub(r"[^a-zA-Z0-9]", " ", text)
     tokens = word_tokenize(text)
+    stop_words = stopwords.words("english")
     lemmatizer = WordNetLemmatizer()
 
-    clean_tokens = []
-    for tok in tokens:
-        clean_tok = lemmatizer.lemmatize(tok).lower().strip()
-        clean_tokens.append(clean_tok)
+    clean_tokens = [lemmatizer.lemmatize(tok).lower().strip() for tok in tokens if tok not in stop_words]
 
     return clean_tokens
 
