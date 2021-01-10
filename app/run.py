@@ -107,6 +107,9 @@ def index():
                     'title': "Categories",
                     'tickangle': '45',
                     'automargin': 'True'
+                },
+                'margin': {
+                    'b': 150
                 }
             }
         },
@@ -119,7 +122,7 @@ def index():
             ],
 
             'layout': {
-                'title': 'Frequency of top 10 words <br> as percentage',
+                'title': 'Top 10 words in messages',
                 'yaxis': {
                     'title': 'Count',
                     'automargin': True
