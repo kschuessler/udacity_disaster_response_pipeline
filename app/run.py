@@ -6,6 +6,7 @@ import pandas as pd
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 
+from collections import Counter
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
@@ -42,6 +43,23 @@ def index():
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
+    category_names = df.iloc[:, 4:].columns
+    category_counts = df.iloc[:, 4:].sum().values
+
+    words = []
+    for text in df['message'].values:
+        words.extend(tokenize(text))
+    word_count = Counter(words)
+    sorted_word_count = dict(sorted(word_count.items(), key=operator.itemgetter(1), reverse=True))
+    num, top_10 = 0, {}
+    for i, j in sorted_word_count.items():
+        top_10[i] = j
+        num+=1
+        if num==10:
+            break
+    top_10_words = list(top_10.keys())
+    top_10_word_count = list(top_10.values())
     
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
@@ -61,6 +79,46 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=category_names,
+                    y=category_counts
+                )
+            ],
+
+            'layout': {
+                'title': 'Distribution of Message Categories',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Categories",
+                    'tickangle': '45',
+                    'automargin': 'True'
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=top_10_words,
+                    y=top_10_word_count
+                )
+            ],
+
+            'layout': {
+                'title': 'Frequency of top 10 words <br> as percentage',
+                'yaxis': {
+                    'title': 'Count',
+                    'automargin': True
+                },
+                'xaxis': {
+                    'title': 'Top 10 words',
+                    'automargin': True
                 }
             }
         }

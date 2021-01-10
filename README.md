@@ -30,6 +30,7 @@ The project contains the following scripts:
     - process_data.py: script to read the data from raw csv files, transforms and cleans them and stores result in a SQLite database
 - \models
     - classifier.pkl: model pickle file (result of ML pipeline)
+      NOTE: file too big to be stored on Github --> execute script to generate file
     - train_classifier.py: script to build, train, evaluate and save the model
 ```
 
